@@ -32,14 +32,16 @@ app.post("/signup", async (c: any) => {
     });
   }
   const passwordHash = bcrypt.hashSync(res.password, c.env.saltRounds);
-  console.log(res.email, res.username, passwordHash);
-  const user = await prismaClient.user.create({
-    email: res.email,
-    userName: res.username,
-    passwordHash,
-  });
 
-  return res.json({ message: "Success!" });
+  const user = await prismaClient.user.create({
+    data: {
+      email: JSON.stringify(res.email),
+      userName: res.username,
+      passwordHash,
+    },
+  });
+  console.log(user);
+  return c.json({ message: "Success!" });
 });
 
 app.post("/signin", async (c: any) => {
