@@ -40,7 +40,6 @@ app.post("/signup", async (c: any) => {
       passwordHash,
     },
   });
-  console.log(user);
   return c.json({ message: "Success!" });
 });
 
