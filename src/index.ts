@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { validateSignupData } from "./utils/validation";
+import { validateSignupData, validateSignInData } from "./utils/validation";
 import bcrypt from "bcryptjs";
 import { prismaClient } from "./db";
 import jwt from "jsonwebtoken";
@@ -9,6 +9,7 @@ const app = new Hono();
 export interface Env {
   DATABASE_URL: string;
   saltRounds: number;
+  SECRET_KEY: string;
 }
 
 // Initialize Prisma client inside route handlers where env is available
@@ -47,11 +48,15 @@ app.post("/signup", async (c: any) => {
 
 app.post("/signin", async (c: any) => {
   const res = await c.req.json();
-  const passwordHash = bcrypt.hashSync(res.password, c.env.saltRounds);
+
+  const validation = validateSignInData(res);
+
+  if (!validation.isValid) {
+    return c.text(validation.message || "Validation failed", 422);
+  }
   const user = await prismaClient.user.findFirst({
     where: {
       email: JSON.stringify(res.email),
-      passwordHash,
     },
   });
 
@@ -61,15 +66,21 @@ app.post("/signin", async (c: any) => {
       message: "User doesn't exist",
     });
   }
-  const token = jwt.sign(
-    {
-      id: user.id,
-    },
-    c.env.SECRET_KEY
-  );
 
-  c.json({
-    user,
+  const result = await bcrypt.compare(res.password, user.passwordHash);
+
+  if (!result) {
+    console.log("here?");
+    return c.json({
+      message: "Incorrect password",
+    });
+  }
+
+  const token = jwt.sign({ id: user.id }, c.env.SECRET_KEY);
+
+  return c.json({
+    user_detail_id: user.id,
+    userName: user.userName,
     token,
   });
 });

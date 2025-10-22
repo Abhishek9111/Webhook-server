@@ -3,6 +3,10 @@ export interface SignupData {
   password: string;
   email: string;
 }
+export interface SignInData {
+  password: string;
+  email: string;
+}
 
 export interface ValidationResult {
   isValid: boolean;
@@ -69,6 +73,24 @@ export function validateSignupData(data: SignupData): ValidationResult {
     return usernameValidation;
   }
 
+  const passwordValidation = validatePassword(data.password);
+  if (!passwordValidation.isValid) {
+    return passwordValidation;
+  }
+
+  const emailValidation = validateEmail(data.email);
+  if (!emailValidation.isValid) {
+    return emailValidation;
+  }
+
+  return { isValid: true };
+}
+export function validateSignInData(data: SignInData): ValidationResult {
+  if (!data.password || !data.email) {
+    return { isValid: false, message: "Invalid credentials" };
+  }
+
+  // Validate each field
   const passwordValidation = validatePassword(data.password);
   if (!passwordValidation.isValid) {
     return passwordValidation;
