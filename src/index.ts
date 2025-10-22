@@ -20,14 +20,16 @@ app.post("/signup", async (c: any) => {
   const res = await c.req.json();
 
   const validation = validateSignupData(res);
+
   if (!validation.isValid) {
     return c.text(validation.message || "Validation failed", 422);
   }
   const userExists = await prismaClient.user.findFirst({
-    where: { email: res.username },
+    where: { email: res.email },
   });
   if (userExists) {
-    return res.status(403).json({
+    return c.json({
+      status: 403,
       message: "User already exists",
     });
   }
@@ -36,7 +38,7 @@ app.post("/signup", async (c: any) => {
   const user = await prismaClient.user.create({
     data: {
       email: JSON.stringify(res.email),
-      userName: res.username,
+      userName: res.userName,
       passwordHash,
     },
   });
@@ -48,17 +50,17 @@ app.post("/signin", async (c: any) => {
   const passwordHash = bcrypt.hashSync(res.password, c.env.saltRounds);
   const user = await prismaClient.user.findFirst({
     where: {
-      email: res.email,
-      password: passwordHash,
+      email: JSON.stringify(res.email),
+      passwordHash,
     },
   });
 
   if (!user) {
-    return res.status(403).json({
+    return c.json({
+      status: 403,
       message: "User doesn't exist",
     });
   }
-
   const token = jwt.sign(
     {
       id: user.id,
@@ -66,7 +68,7 @@ app.post("/signin", async (c: any) => {
     c.env.SECRET_KEY
   );
 
-  res.json({
+  c.json({
     user,
     token,
   });

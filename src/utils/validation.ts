@@ -1,5 +1,5 @@
 export interface SignupData {
-  username: string;
+  userName: string;
   password: string;
   email: string;
 }
@@ -13,12 +13,12 @@ const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const emailRegex = /^[a-z0-9][\w\.]+\@\w+?(\.\w+){1,}$/gi;
 
-export function validateUsername(username: string): ValidationResult {
-  if (!username) {
+export function validateUsername(userName: string): ValidationResult {
+  if (!userName) {
     return { isValid: false, message: "Username is required" };
   }
 
-  if (username.length < 8) {
+  if (userName.length < 8) {
     return {
       isValid: false,
       message: "Username must be at least 8 characters long",
@@ -58,12 +58,13 @@ export function validateEmail(email: string): ValidationResult {
 
 export function validateSignupData(data: SignupData): ValidationResult {
   // Check if all required fields are present
-  if (!data.username || !data.password || !data.email) {
+
+  if (!data.userName || !data.password || !data.email) {
     return { isValid: false, message: "Invalid credentials" };
   }
 
   // Validate each field
-  const usernameValidation = validateUsername(data.username);
+  const usernameValidation = validateUsername(data.userName);
   if (!usernameValidation.isValid) {
     return usernameValidation;
   }
