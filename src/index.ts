@@ -70,7 +70,6 @@ app.post("/signin", async (c: any) => {
   const result = await bcrypt.compare(res.password, user.passwordHash);
 
   if (!result) {
-    console.log("here?");
     return c.json({
       message: "Incorrect password",
     });
