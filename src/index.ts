@@ -89,7 +89,7 @@ app.post("/signin", async (c: any) => {
   });
 });
 
-app.get("/session", async (c: any) => {
+app.get("/session-refresh", async (c: any) => {
   const header = await c.req.header("Authorization");
   const result = await verifyToken(header, c.env.SECRET_KEY, "session");
   if (result.error === "User doesn't exist") {
