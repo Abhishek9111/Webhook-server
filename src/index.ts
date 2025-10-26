@@ -14,7 +14,6 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-// Mount user router
 app.route("/user", userRouter);
 
 export default app;
