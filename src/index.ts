@@ -2,8 +2,8 @@ import { Hono } from "hono";
 import { validateSignupData, validateSignInData } from "./utils/validation";
 import bcrypt from "bcryptjs";
 import { prismaClient } from "./db";
-import jwt from "jsonwebtoken";
-
+import { verifyToken, generateToken } from "./utils/jwt";
+import { authMiddleware } from "./middleware";
 const app = new Hono();
 
 export interface Env {
@@ -29,10 +29,12 @@ app.post("/signup", async (c: any) => {
     where: { email: res.email },
   });
   if (userExists) {
-    return c.json({
-      status: 403,
-      message: "User already exists",
-    });
+    return c.json(
+      {
+        message: "User already exists",
+      },
+      403
+    );
   }
   const passwordHash = bcrypt.hashSync(res.password, c.env.saltRounds);
 
@@ -75,7 +77,10 @@ app.post("/signin", async (c: any) => {
     });
   }
 
-  const token = jwt.sign({ id: user.id }, c.env.SECRET_KEY);
+  const token = generateToken(
+    { email: user.email, id: user.id },
+    c.env.SECRET_KEY
+  );
 
   return c.json({
     user_detail_id: user.id,
@@ -84,19 +89,20 @@ app.post("/signin", async (c: any) => {
   });
 });
 
-// app.get("/user", async (c) => {
-//   const id = c.id;
-
-//   const user = await prismaClient.user.findFirst({
-//     where: {
-//       id,
-//     },
-//     select: {
-//       name: true,
-//       email: true,
-//       webHookHashes: true,
-//     },
-//   });
-// });
+app.get("/session", async (c: any) => {
+  const header = await c.req.header("Authorization");
+  const result = await verifyToken(header, c.env.SECRET_KEY, "session");
+  if (result.error === "User doesn't exist") {
+    return c.json({ status: 403, message: "User doesn't exist" }, 403);
+  } else {
+    const token = generateToken(
+      { email: result.payload!.email, id: result.payload!.id },
+      c.env.SECRET_KEY
+    );
+    return c.json({
+      token,
+    });
+  }
+});
 
 export default app;
