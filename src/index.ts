@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { authMiddleware } from "./middleware";
 import userRouter from "./router/userRouter";
+import webHookRouter from "./router/webHookRouter";
 const app = new Hono();
 
 export interface Env {
@@ -15,5 +16,7 @@ app.get("/", (c) => {
 });
 
 app.route("/user", userRouter);
+
+app.route("/webHook", webHookRouter);
 
 export default app;
