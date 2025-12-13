@@ -20,8 +20,8 @@ export const authMiddleware = async (c: any, next: any) => {
   }
 
   // Add user info to context
-  c.res.id = result.payload!.id;
-  c.res.email = result.payload!.email;
+  c.set("userId", result.payload!.id);
+  c.set("userEmail", result.payload!.email);
 
   await next();
 };

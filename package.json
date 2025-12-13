@@ -9,10 +9,12 @@
     "@prisma/client": "^6.11.1",
     "@prisma/extension-accelerate": "^2.0.2",
     "@types/jsonwebtoken": "^9.0.10",
+    "@upstash/redis": "^0.0.0-ci.05744c9f87650d51a0b75f1ed243bc1fb87c9088-20250430142254",
     "bcryptjs": "^3.0.2",
     "hono": "^4.8.4",
     "jsonwebtoken": "^9.0.2",
-    "postgres": "^3.4.7"
+    "postgres": "^3.4.7",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

@@ -32,7 +32,7 @@ userRouter.post("/signup", async (c: any) => {
     );
   }
   const passwordHash = bcrypt.hashSync(res.password, c.env.saltRounds);
-
+  console.log("this is res");
   const user = await prismaClient.user.create({
     data: {
       email: JSON.stringify(res.email),

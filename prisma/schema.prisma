@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,31 +5,35 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userName String
-  email String
-  passwordHash String
-  webHookHashes Webhookhash[]  
+model User {
+  id            Int           @id @default(autoincrement())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  userName      String
+  email         String
+  passwordHash  String
+  webHookHashes Webhookhash[]
 }
 
-model Webhookhash{
-  id Int @id @default(autoincrement())
-  urlString String
-  user_detail_id Int
-  user User @relation(fields: [user_detail_id],references: [id])
+model Webhookhash {
+  id                 Int           @id @default(autoincrement())
+  urlString          String        @unique
+  user_detail_id     Int
+  createdAt          DateTime      @default(now())
   webHookFetchedData Webhookdata[]
-  createdAt DateTime @default(now())
+  user               User          @relation(fields: [user_detail_id], references: [id])
 }
 
-model Webhookdata{
-  id Int @id @default(autoincrement())
-  webHookId Int
-  webHookHash Webhookhash @relation(fields:[webHookId],references: [id])
-  data Json
-  createdAt DateTime @default(now())
+model Webhookdata {
+  id          Int         @id @default(autoincrement())
+  webHookId   Int
+  data        Json?
+  createdAt   DateTime    @default(now())
+  apiCallUrl  String
+  typeOfCall  String
+  webHookHash Webhookhash @relation(fields: [webHookId], references: [id])
+  tempField   String?
 }

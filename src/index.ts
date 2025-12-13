@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { authMiddleware } from "./middleware";
 import userRouter from "./router/userRouter";
+import { prismaClient } from "./db";
 import webHookRouter from "./router/webHookRouter";
 const app = new Hono();
 
@@ -17,6 +17,15 @@ app.get("/", (c) => {
 
 app.route("/user", userRouter);
 
-app.route("/webHook", webHookRouter);
+app.route("/webhook", webHookRouter);
 
+process.on("SIGINT", async () => {
+  await prismaClient.$disconnect();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  await prismaClient.$disconnect();
+  process.exit(0);
+});
 export default app;
