@@ -16,7 +16,6 @@ webHookRouter.post("/add", authMiddleware, async (c: any) => {
     data: {
       urlString: uuid,
       user_detail_id: userId,
-      //   encodedRoute:
     },
   });
   console.log("this is data", data);
