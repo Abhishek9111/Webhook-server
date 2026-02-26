@@ -28,7 +28,7 @@ userRouter.post("/signup", async (c: any) => {
       {
         message: "User already exists",
       },
-      403
+      403,
     );
   }
   const passwordHash = bcrypt.hashSync(res.password, c.env.saltRounds);
@@ -40,7 +40,13 @@ userRouter.post("/signup", async (c: any) => {
       passwordHash,
     },
   });
-  return c.json({ message: "Success!" });
+
+  const token = generateToken(
+    { email: user.email, id: user.id },
+    c.env.SECRET_KEY,
+  );
+
+  return c.json({ user_detail_id: user.id, userName: user.userName, token });
 });
 
 userRouter.post("/signin", async (c: any) => {
@@ -74,7 +80,7 @@ userRouter.post("/signin", async (c: any) => {
 
   const token = generateToken(
     { email: user.email, id: user.id },
-    c.env.SECRET_KEY
+    c.env.SECRET_KEY,
   );
 
   return c.json({
@@ -92,7 +98,7 @@ userRouter.get("/session-refresh", async (c: any) => {
   } else {
     const token = generateToken(
       { email: result.payload!.email, id: result.payload!.id },
-      c.env.SECRET_KEY
+      c.env.SECRET_KEY,
     );
     return c.json({
       token,
