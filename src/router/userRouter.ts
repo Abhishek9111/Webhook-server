@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { setCookie } from "hono/cookie";
 import { validateSignupData, validateSignInData } from "../utils/validation";
 import bcrypt from "bcryptjs";
 import { prismaClient } from "../db";
@@ -46,7 +47,15 @@ userRouter.post("/signup", async (c: any) => {
     c.env.SECRET_KEY,
   );
 
-  return c.json({ user_detail_id: user.id, userName: user.userName, token });
+  setCookie(c, "authToken", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Lax",
+    path: "/",
+    maxAge: 60 * 60 * 24,
+  });
+
+  return c.json({ user_detail_id: user.id, userName: user.userName });
 });
 
 userRouter.post("/signin", async (c: any) => {
