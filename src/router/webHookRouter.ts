@@ -19,7 +19,15 @@ webHookRouter.post("/add", authMiddleware, async (c: any) => {
     },
   });
   console.log("this is data", data);
-  await redis.set(data.urlString, data.id);
+  try {
+    await redis.set(data.urlString, String(data.id));
+  } catch (e) {
+    console.error("Redis set failed:", e);
+    return c.json(
+      { error: "Failed to store webhook", details: String(e) },
+      500,
+    );
+  }
   return c.json({ data: data.urlString });
 });
 
@@ -29,16 +37,13 @@ webHookRouter.get(`/data/:id`, authMiddleware, async (c: any) => {
   if (!indexId) {
     return c.json({ message: "Invalid URL" }, 400);
   }
-  const data = await prismaClient.webhookdata.create({
-    data: {
-      apiCallUrl: c.req.url,
-      webHookId: Number(indexId),
-      typeOfCall: "GET",
-      data: {},
+  const data = await prismaClient.webhookdata.findMany({
+    where: {
+      webHookId: indexId,
     },
   });
   console.log("this is data", data);
-  return c.json({}, 200);
+  return c.json({ data }, 200);
 });
 
 webHookRouter.post(`/data/:id`, authMiddleware, async (c: any) => {

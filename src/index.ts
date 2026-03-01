@@ -11,15 +11,14 @@ export interface Env {
   SECRET_KEY: string;
 }
 
-
 app.use(
   "*",
   cors({
     origin: "http://localhost:3000",
-    allowMethods: ["GET", "POST",   "OPTIONS"],
+    allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
 
 // Initialize Prisma client inside route handlers where env is available
@@ -27,6 +26,12 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
+app.get("/debug", (c) => {
+  return c.json({
+    url: c.env.UPSTASH_REDIS_REST_URL || "missing",
+    tokenExists: !!c.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+});
 app.route("/user", userRouter);
 
 app.route("/webhook", webHookRouter);
