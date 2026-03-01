@@ -44,6 +44,17 @@ webHookRouter.get(`/data/:id`, authMiddleware, async (c: any) => {
   return c.json({ data }, 200);
 });
 
+webHookRouter.get("/get-all", authMiddleware, async (c: any) => {
+  const id = c.req.param("id");
+
+  const data = await prismaClient.webhookhash.findMany({
+    where: {
+      user_detail_id: id,
+    },
+  });
+  return c.json({ data }, 200);
+});
+
 webHookRouter.post(`/data/:id`, authMiddleware, async (c: any) => {
   const id = c.req.param("id");
   const res = await c.req.json();
