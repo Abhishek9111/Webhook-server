@@ -18,7 +18,6 @@ webHookRouter.post("/add", authMiddleware, async (c: any) => {
       user_detail_id: userId,
     },
   });
-  console.log("this is data", data);
   try {
     await redis.set(data.urlString, String(data.id));
   } catch (e) {
@@ -42,7 +41,6 @@ webHookRouter.get(`/data/:id`, authMiddleware, async (c: any) => {
       webHookId: indexId,
     },
   });
-  console.log("this is data", data);
   return c.json({ data }, 200);
 });
 
