@@ -92,10 +92,17 @@ userRouter.post("/signin", async (c: any) => {
     c.env.SECRET_KEY,
   );
 
+  setCookie(c, "authToken", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Lax",
+    path: "/",
+    maxAge: 60 * 60 * 24,
+  });
+
   return c.json({
     user_detail_id: user.id,
     userName: user.userName,
-    token,
   });
 });
 
