@@ -1,7 +1,7 @@
 import { verifyToken } from "./utils/jwt";
 
 export const authMiddleware = async (c: any, next: any) => {
-  const header = c.req.header("Authorization");
+  const header = c.req.header("authToken");
 
   if (!header) {
     return c.json({ message: "No token provided" }, 401);
