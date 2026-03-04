@@ -1,8 +1,7 @@
 import { verifyToken } from "./utils/jwt";
 
 export const authMiddleware = async (c: any, next: any) => {
-  const header = c.req.header("authToken");
-
+  const header = c.req.header("cookie").split("=")[1];
   if (!header) {
     return c.json({ message: "No token provided" }, 401);
   }
