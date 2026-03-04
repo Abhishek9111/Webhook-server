@@ -55,7 +55,7 @@ webHookRouter.get("/get-all", authMiddleware, async (c: any) => {
   return c.json({ data }, 200);
 });
 
-webHookRouter.post(`/data/:id`, authMiddleware, async (c: any) => {
+webHookRouter.post(`/data/:id`, async (c: any) => {
   const id = c.req.param("id");
   const res = await c.req.json();
   const indexId = await redis.get(id);
