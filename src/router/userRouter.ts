@@ -92,10 +92,17 @@ userRouter.post("/signin", async (c: any) => {
     c.env.SECRET_KEY,
   );
 
+  // setCookie(c, "authToken", token, {
+  //   httpOnly: true,
+  //   secure: false,
+  //   sameSite: "Lax",
+  //   path: "/",
+  //   maxAge: 60 * 60 * 24,
+  // });
   setCookie(c, "authToken", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "Lax",
+    secure: true,
+    sameSite: "None",
     path: "/",
     maxAge: 60 * 60 * 24,
   });
