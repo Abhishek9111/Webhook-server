@@ -101,7 +101,7 @@ userRouter.post("/signin", async (c: any) => {
   // });
   setCookie(c, "authToken", token, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "None",
     path: "/",
     maxAge: 60 * 60 * 24,
